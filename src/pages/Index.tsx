@@ -1,17 +1,29 @@
 import React, { useState, useMemo } from "react";
 import {
-  Plus,
   Trophy,
   Clock,
   Target,
   Presentation,
   VolumeX,
+  Users,
+  GraduationCap,
+  Briefcase,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface Milestone {
   id: number;
@@ -21,11 +33,19 @@ interface Milestone {
   completedAt?: Date;
 }
 
+interface User {
+  name: string;
+  email: string;
+  experienceLevel: "student" | "working professional";
+}
+
 interface Team {
   id: string;
   name: string;
   milestones: Milestone[];
   totalTime: number;
+  description?: string;
+  members: User[];
 }
 
 const INITIAL_MILESTONES: Milestone[] = [
@@ -56,13 +76,14 @@ const Index = () => {
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          // Convert completedAt back to Date objects
+          // Convert completedAt back to Date objects and ensure members array exists
           return parsed.map((team: Team) => ({
             ...team,
-            milestones: team.milestones.map((m: Milestone) => ({
+            milestones: team.milestones ? team.milestones.map((m: Milestone) => ({
               ...m,
               completedAt: m.completedAt ? new Date(m.completedAt) : undefined,
-            })),
+            })) : INITIAL_MILESTONES.map((m) => ({ ...m })),
+            members: team.members || [],
           }));
         } catch {
           return [];
@@ -78,7 +99,6 @@ const Index = () => {
     }
   }, [teams]);
 
-  const [newTeamName, setNewTeamName] = useState("");
   const [presentationMode, setPresentationMode] = useState(false);
   const [muteAudio, setMuteAudio] = useState(false);
   const [timer, setTimer] = useState(new Date());
@@ -186,18 +206,6 @@ const Index = () => {
     });
   }, [teams]);
 
-  const addTeam = () => {
-    if (newTeamName.trim()) {
-      const newTeam: Team = {
-        id: Date.now().toString(),
-        name: newTeamName.trim(),
-        milestones: INITIAL_MILESTONES.map((m) => ({ ...m })),
-        totalTime: 0,
-      };
-      setTeams([...teams, newTeam]);
-      setNewTeamName("");
-    }
-  };
 
   const toggleMilestone = (teamId: string, milestoneId: number) => {
     // Play buzzer sound
@@ -286,13 +294,13 @@ const Index = () => {
           <div className="flex justify-between items-center mb-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center border-2 border-blue-400">
+                {/* <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center border-2 border-blue-400">
                   <img
                     src="/logo.png"
                     alt="Logo"
                     className="w-full h-full object-contain"
                   />
-                </div>
+                </div> */}
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
                   D3 Workshop Leader Board
                 </h1>
@@ -353,29 +361,6 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Add Team Section */}
-          {!presentationMode && (
-            <Card className="bg-gray-800 border-gray-700 mb-6">
-              <CardContent className="p-6">
-                <div className="flex gap-4">
-                  <Input
-                    placeholder="Enter team name..."
-                    value={newTeamName}
-                    onChange={(e) => setNewTeamName(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && addTeam()}
-                    className="flex-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                  />
-                  <Button
-                    onClick={addTeam}
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add Team
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         {/* Teams Grid */}
@@ -419,6 +404,53 @@ const Index = () => {
                       </div>
                     )}
                   </div>
+                  
+                  {/* Team Members Info */}
+                  {team.members && team.members.length > 0 && (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <div className="text-sm text-gray-400 flex items-center gap-1 cursor-pointer hover:text-gray-300 transition-colors">
+                          <Users className="w-4 h-4" />
+                          {team.members.length} member{team.members.length !== 1 ? 's' : ''}
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80 bg-gray-800 border-gray-600">
+                        <div className="space-y-3">
+                          <h4 className="text-white font-medium">Team Members</h4>
+                          <div className="space-y-2 max-h-60 overflow-y-auto">
+                            {team.members.map((member, index) => (
+                              <div key={index} className="flex items-center gap-2 p-2 bg-gray-700/50 rounded-lg">
+                                <div className="flex-1">
+                                  <div className="text-sm font-medium text-white">{member.name}</div>
+                                  <div className="text-xs text-gray-400">{member.email}</div>
+                                </div>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className={`p-1.5 rounded-full cursor-help ${
+                                        member.experienceLevel === 'student' 
+                                          ? 'bg-green-600 text-white hover:bg-green-500' 
+                                          : 'bg-purple-600 text-white hover:bg-purple-500'
+                                      }`}>
+                                        {member.experienceLevel === 'student' ? (
+                                          <GraduationCap className="w-3 h-3" />
+                                        ) : (
+                                          <Briefcase className="w-3 h-3" />
+                                        )}
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p className="capitalize">{member.experienceLevel}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  )}
                   <div className="flex justify-start items-start">
                     {isFullyCompleted && (
                       <Badge size="lg" className="bg-green-600 text-white">
@@ -429,8 +461,11 @@ const Index = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {team.milestones.map((milestone) => (
-                    <div key={milestone.id} className="space-y-2">
+                  {/* Milestones */}
+                  <div className="space-y-2">
+                    <div className="text-sm font-medium text-gray-300 mb-2">Milestones</div>
+                    {team.milestones.map((milestone) => (
+                      <div key={milestone.id} className="space-y-2">
                       <div
                         className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
                           milestone.completed
@@ -478,6 +513,7 @@ const Index = () => {
                       </div>
                     </div>
                   ))}
+                  </div>
                 </CardContent>
               </Card>
             );
@@ -500,8 +536,8 @@ const Index = () => {
               <circle cx="18" cy="34" r="5" fill="#94A3B8" />
               <circle cx="46" cy="34" r="5" fill="#94A3B8" />
             </svg>
-            <div className="text-gray-400 text-lg mb-4">No teams added yet</div>
-            <p className="text-gray-500">Add your first team to get started!</p>
+            <div className="text-gray-400 text-lg mb-4">No teams available yet</div>
+            <p className="text-gray-500">Create teams in the Teams page to start tracking progress!</p>
           </div>
         )}
       </div>

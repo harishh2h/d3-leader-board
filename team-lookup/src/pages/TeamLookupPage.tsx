@@ -1,13 +1,8 @@
+import { SITE_COPY } from "@/App";
 import { PageShell } from "@/components/PageShell";
 import { fetchTeamByEmail } from "@/lib/fetch-team-by-email";
 import { Loader2, PartyPopper } from "lucide-react";
-import {
-  type FormEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 type LookupUiState =
@@ -17,115 +12,6 @@ type LookupUiState =
   | { status: "not_found" }
   | { status: "error"; message: string }
   | { status: "validation"; message: string };
-
-type CommunityCopy = {
-  readonly communityName: string;
-  readonly communityAbbrev: string;
-  readonly brandTagline: string;
-  readonly brandHeadline: string;
-  readonly aboutSectionHeading: string;
-  readonly eventTitle: string;
-  readonly eventIntro: string;
-  readonly successEmoji: string;
-  readonly communitySiteUrl: string;
-  readonly communityEventsUrl: string;
-  readonly supportEmail: string;
-  readonly brandLogoSrc: string;
-};
-
-const DEFAULT_SUCCESS_EMOJI = "🎉";
-
-const COMMUNITY_SITE_DEFAULTS: CommunityCopy = {
-  communityName: "Digital Dreamers Den",
-  communityAbbrev: "D3",
-  brandTagline: "BUILDING THE FUTURE",
-  brandHeadline: "Dream. Build. Grow.",
-  aboutSectionHeading: "About this event",
-  eventTitle: "Welcome to the Anniversary Meetup Activity",
-  eventIntro:
-    "Find your team name using your registered email. This is your chance to do more than just code—connect, collaborate, and network with the community!",
-  successEmoji: DEFAULT_SUCCESS_EMOJI,
-  communitySiteUrl: "https://digitaldreamersden.in/",
-  communityEventsUrl: "https://digitaldreamersden.in/#events",
-  supportEmail: "d3communityofficial@gmail.com",
-  brandLogoSrc: "/full_logo.png",
-};
-
-function readEnvString(
-  key: keyof ImportMetaEnv,
-  fallback: string,
-): string {
-  const raw: unknown = import.meta.env[key];
-  if (typeof raw !== "string") {
-    return fallback;
-  }
-  const trimmed: string = raw.trim();
-  return trimmed.length > 0 ? trimmed : fallback;
-}
-
-function readCelebrationEmoji(): string {
-  const raw: unknown = import.meta.env.VITE_SUCCESS_EMOJI;
-  if (typeof raw !== "string") {
-    return DEFAULT_SUCCESS_EMOJI;
-  }
-  const trimmed: string = raw.trim();
-  if (trimmed.length === 0 || trimmed.toLowerCase() === "none") {
-    return "";
-  }
-  return trimmed;
-}
-
-function useCommunityCopy(): CommunityCopy {
-  return useMemo((): CommunityCopy => {
-    return {
-      communityName: readEnvString(
-        "VITE_COMMUNITY_NAME",
-        COMMUNITY_SITE_DEFAULTS.communityName,
-      ),
-      communityAbbrev: readEnvString(
-        "VITE_COMMUNITY_ABBREV",
-        COMMUNITY_SITE_DEFAULTS.communityAbbrev,
-      ),
-      brandTagline: readEnvString(
-        "VITE_BRAND_TAGLINE",
-        COMMUNITY_SITE_DEFAULTS.brandTagline,
-      ),
-      brandHeadline: readEnvString(
-        "VITE_BRAND_HEADLINE",
-        COMMUNITY_SITE_DEFAULTS.brandHeadline,
-      ),
-      aboutSectionHeading: readEnvString(
-        "VITE_EVENT_ABOUT_HEADING",
-        COMMUNITY_SITE_DEFAULTS.aboutSectionHeading,
-      ),
-      eventTitle: readEnvString(
-        "VITE_EVENT_TITLE",
-        COMMUNITY_SITE_DEFAULTS.eventTitle,
-      ),
-      eventIntro: readEnvString(
-        "VITE_EVENT_INTRO",
-        COMMUNITY_SITE_DEFAULTS.eventIntro,
-      ),
-      successEmoji: readCelebrationEmoji(),
-      communitySiteUrl: readEnvString(
-        "VITE_COMMUNITY_SITE_URL",
-        COMMUNITY_SITE_DEFAULTS.communitySiteUrl,
-      ),
-      communityEventsUrl: readEnvString(
-        "VITE_COMMUNITY_EVENTS_URL",
-        COMMUNITY_SITE_DEFAULTS.communityEventsUrl,
-      ),
-      supportEmail: readEnvString(
-        "VITE_SUPPORT_EMAIL",
-        COMMUNITY_SITE_DEFAULTS.supportEmail,
-      ),
-      brandLogoSrc: readEnvString(
-        "VITE_BRAND_LOGO_SRC",
-        COMMUNITY_SITE_DEFAULTS.brandLogoSrc,
-      ),
-    };
-  }, []);
-}
 
 type CelebrationVisualProps = {
   readonly emoji: string;
@@ -162,7 +48,7 @@ function CelebrationVisual(props: CelebrationVisualProps): JSX.Element {
 }
 
 export default function TeamLookupPage(): JSX.Element {
-  const copy: CommunityCopy = useCommunityCopy();
+  const copy = SITE_COPY;
   const successDialogRef = useRef<HTMLDialogElement>(null);
   const [emailInput, setEmailInput] = useState<string>("");
   const [lookupState, setLookupState] = useState<LookupUiState>({

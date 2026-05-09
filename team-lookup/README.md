@@ -4,7 +4,8 @@ Small **Vite + React** SPA for participants: enter a registered email, see **onl
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local` (or configure the same variables on your host).
+Copy `.env.example` to `.env.local` (or configure the same variables on your host).  
+Headings, footer links, logo path, and related copy are **not** env-driven—edit `SITE_COPY` in `src/App.tsx`.
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -12,7 +13,6 @@ Copy `.env.example` to `.env.local` (or configure the same variables on your hos
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Yes* | Publishable API key (Project Settings → API). |
 | `VITE_SUPABASE_ANON_KEY` | Yes* | Legacy anon key; used if publishable key is unset. |
 | `VITE_SUPABASE_TEAM_TABLE` | No | Table name; defaults to `leaderboard_team_members` (same as organizer sync). |
-| `VITE_EVENT_TITLE` | No | Main heading on the page. |
 
 \* Provide **either** `VITE_SUPABASE_PUBLISHABLE_KEY` or `VITE_SUPABASE_ANON_KEY`.
 
@@ -33,7 +33,7 @@ cd team-lookup
 npm run build
 ```
 
-Static assets are written to `team-lookup/dist/`. Serve that folder on any static host (Vercel, Netlify, Cloudflare Pages, S3, etc.) and set the same `VITE_*` variables in the hosting dashboard.
+Static assets are written to `team-lookup/dist/`. Serve that folder on any static host (Vercel, Netlify, Cloudflare Pages, S3, etc.) and set the Supabase `VITE_*` variables in the hosting dashboard (see table above).
 
 ## Supabase access (RLS)
 

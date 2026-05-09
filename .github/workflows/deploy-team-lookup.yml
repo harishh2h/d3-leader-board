@@ -2,8 +2,10 @@
 #
 # Setup (once per repo):
 # 1. Repo → Settings → Pages → Source: GitHub Actions.
-# 2. Repo → Settings → Secrets and variables → Actions → New repository secret
-#    Add at least VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY (names must match .env).
+# 2. Repo → Settings → Secrets and variables → Actions → Repository secrets
+#    Create ONE secret per variable (you cannot paste a whole .env into a single secret).
+#    Required: VITE_SUPABASE_URL plus EITHER VITE_SUPABASE_PUBLISHABLE_KEY OR VITE_SUPABASE_ANON_KEY.
+#    Optional: VITE_SUPABASE_TEAM_TABLE. Other copy lives in team-lookup/src/App.tsx (SITE_COPY).
 # 3. For a project site (https://USER.github.io/REPO/), VITE_BASE_PATH uses REPO name below.
 #    For a root site (custom domain or USER.github.io repo), change VITE_BASE_PATH to /
 
@@ -47,18 +49,6 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           VITE_SUPABASE_TEAM_TABLE: ${{ secrets.VITE_SUPABASE_TEAM_TABLE }}
-          VITE_COMMUNITY_NAME: ${{ secrets.VITE_COMMUNITY_NAME }}
-          VITE_COMMUNITY_ABBREV: ${{ secrets.VITE_COMMUNITY_ABBREV }}
-          VITE_BRAND_TAGLINE: ${{ secrets.VITE_BRAND_TAGLINE }}
-          VITE_BRAND_HEADLINE: ${{ secrets.VITE_BRAND_HEADLINE }}
-          VITE_EVENT_ABOUT_HEADING: ${{ secrets.VITE_EVENT_ABOUT_HEADING }}
-          VITE_EVENT_TITLE: ${{ secrets.VITE_EVENT_TITLE }}
-          VITE_EVENT_INTRO: ${{ secrets.VITE_EVENT_INTRO }}
-          VITE_SUCCESS_EMOJI: ${{ secrets.VITE_SUCCESS_EMOJI }}
-          VITE_COMMUNITY_SITE_URL: ${{ secrets.VITE_COMMUNITY_SITE_URL }}
-          VITE_COMMUNITY_EVENTS_URL: ${{ secrets.VITE_COMMUNITY_EVENTS_URL }}
-          VITE_SUPPORT_EMAIL: ${{ secrets.VITE_SUPPORT_EMAIL }}
-          VITE_BRAND_LOGO_SRC: ${{ secrets.VITE_BRAND_LOGO_SRC }}
         run: |
           npm ci
           npm run build

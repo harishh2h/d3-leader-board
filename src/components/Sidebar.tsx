@@ -37,11 +37,18 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
         {/* Logo Section */}
         <div className="p-4 border-b border-gray-700">
           <div className="flex items-center gap-3">
-            <div className={cn("bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center  flex-shrink-0 transition-width transition-height duration-300", isCollapsed ? "w-12 h-12" : "w-16 h-16")}>
+            <div
+              className={cn(
+                "rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 transition-all duration-300",
+                isCollapsed
+                  ? "w-12 h-12"
+                  : "w-full px-2"
+              )}
+            >
               <img
-                src="https://digitaldreamersden.in/logo.png"
-                alt="Logo"
-                className="w-full h-full object-contain"
+                src={isCollapsed ? "/logo_dark.png" : "/full_logo.png"}
+                alt="Digital Dreamers Den"
+                className="w-full h-full object-contain object-left rounded-lg"
               />
             </div>
           </div>

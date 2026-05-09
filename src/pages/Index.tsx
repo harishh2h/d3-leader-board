@@ -50,24 +50,24 @@ interface Team {
 
 const INITIAL_MILESTONES: Milestone[] = [
   {
-    id: 1,
-    title: "Kickstart Together",
-    subtitle: "Get the project rolling with a shared vision.",
-    completed: false,
+    "id": 1,
+    "title": "Define the Persona",
+    "subtitle": "Establish the agent's role, objectives, and core tools.",
+    "completed": false
   },
   {
-    id: 2,
-    title: "Prototype in Action",
-    subtitle: "Build a simple, working model of your idea.",
-    completed: false,
+    "id": 2,
+    "title": "Architect the Flow",
+    "subtitle": "Wire the reasoning paths and connect the agent's logic.",
+    "completed": false
   },
   {
-    id: 3,
-    title: "Catalyst Launchpad",
-    subtitle: "Deploy your prototype seamlessly on Zoho Catalyst.",
-    completed: false,
-  },
-];
+    "id": 3,
+    "title": "Ship the Vibe",
+    "subtitle": "Execute a live mission and deliver a functional final output.",
+    "completed": false
+  }
+]
 
 const Index = () => {
   const [teams, setTeams] = useState<Team[]>(() => {
@@ -294,15 +294,8 @@ const Index = () => {
           <div className="flex justify-between items-center mb-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                {/* <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center border-2 border-blue-400">
-                  <img
-                    src="/logo.png"
-                    alt="Logo"
-                    className="w-full h-full object-contain"
-                  />
-                </div> */}
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                  D3 Workshop Leader Board
+                Leaderboard
                 </h1>
               </div>
               <p className="text-gray-400 text-xl mt-4">

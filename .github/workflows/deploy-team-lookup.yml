@@ -1,0 +1,79 @@
+# Builds team-lookup with secrets from GitHub Actions, deploys static site to GitHub Pages.
+#
+# Setup (once per repo):
+# 1. Repo → Settings → Pages → Source: GitHub Actions.
+# 2. Repo → Settings → Secrets and variables → Actions → New repository secret
+#    Add at least VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY (names must match .env).
+# 3. For a project site (https://USER.github.io/REPO/), VITE_BASE_PATH uses REPO name below.
+#    For a root site (custom domain or USER.github.io repo), change VITE_BASE_PATH to /
+
+name: Deploy team-lookup to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "team-lookup/**"
+      - ".github/workflows/deploy-team-lookup.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-team-lookup
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: team-lookup/package-lock.json
+
+      - name: Install and build
+        working-directory: team-lookup
+        env:
+          # Must match your Pages URL path (project site = /repository-name/)
+          VITE_BASE_PATH: /${{ github.event.repository.name }}/
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SUPABASE_TEAM_TABLE: ${{ secrets.VITE_SUPABASE_TEAM_TABLE }}
+          VITE_COMMUNITY_NAME: ${{ secrets.VITE_COMMUNITY_NAME }}
+          VITE_COMMUNITY_ABBREV: ${{ secrets.VITE_COMMUNITY_ABBREV }}
+          VITE_BRAND_TAGLINE: ${{ secrets.VITE_BRAND_TAGLINE }}
+          VITE_BRAND_HEADLINE: ${{ secrets.VITE_BRAND_HEADLINE }}
+          VITE_EVENT_ABOUT_HEADING: ${{ secrets.VITE_EVENT_ABOUT_HEADING }}
+          VITE_EVENT_TITLE: ${{ secrets.VITE_EVENT_TITLE }}
+          VITE_EVENT_INTRO: ${{ secrets.VITE_EVENT_INTRO }}
+          VITE_SUCCESS_EMOJI: ${{ secrets.VITE_SUCCESS_EMOJI }}
+          VITE_COMMUNITY_SITE_URL: ${{ secrets.VITE_COMMUNITY_SITE_URL }}
+          VITE_COMMUNITY_EVENTS_URL: ${{ secrets.VITE_COMMUNITY_EVENTS_URL }}
+          VITE_SUPPORT_EMAIL: ${{ secrets.VITE_SUPPORT_EMAIL }}
+          VITE_BRAND_LOGO_SRC: ${{ secrets.VITE_BRAND_LOGO_SRC }}
+        run: |
+          npm ci
+          npm run build
+          cp dist/index.html dist/404.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: team-lookup/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
